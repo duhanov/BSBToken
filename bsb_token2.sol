@@ -46,7 +46,7 @@ contract BsbToken {
     mapping (address => uint256) public balanceOf;
 
 
-    //Возвращаем количество токенов которые разрешены на перевод вледельцем _owner стороннему пользователю _spender (по стандарту ERC-20)
+    //Возвращаем количество токенов которые разрешены на перевод владельцем _owner стороннему пользователю _spender (по стандарту ERC-20)
     function allowance(address _owner, address _spender) external view returns (uint256){
       return allowed[_owner][_spender];
     }
@@ -69,7 +69,7 @@ contract BsbToken {
 
     }
 
-    //Выдаем разрешение пользователю _spender на перевод _amount - токенов пользователя вызывшего функцию
+    //Выдаем разрешение пользователю _spender на перевод _amount - токенов пользователя вызывавшего функцию
     function approve(address _spender, uint256 _amount) external returns (bool){
       allowed[msg.sender][_spender] = _amount;
       emit Approval(msg.sender, _spender, _amount);
@@ -78,13 +78,13 @@ contract BsbToken {
 
     //Преводим токены в количестве _amount от пользователя _from пользователю _to 
     function transferFrom(address _from, address _to, uint256 _amount) external returns (bool){
-      //Если на баленсе пользователя _amount достаточно средств, если пользователь _from (владелец токенов) разрешил перевод токенов в количестве _amount пользователю вызывшему функцию, и если сумма перевода > 0
+      //Если на баленсе пользователя msg.sender достаточно средств для перевода, если пользователь _from (владелец токенов) разрешил перевод токенов в количестве _amount пользователю вызывшему функцию (msg.sender), и если сумма перевода > 0
       if (balanceOf[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0) {
         //Увеличиваем баланс пользователя _to
         balanceOf[_to] += _amount;
         //Уменьшаем баланс пользователя _from
         balanceOf[_from] -= _amount;
-        //Уменьшеаем разрешенную сумму перевода на _amount
+        //Уменьшаем разрешенную сумму перевода на _amount
         allowed[_from][msg.sender] -= _amount;
         //Вызываем событие перевода
         emit Transfer(_from, _to, _amount);
